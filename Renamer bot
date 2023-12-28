@@ -1,0 +1,64 @@
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+
+# Replace 'YOUR_BOT_TOKEN' with the actual token you received from BotFather
+updater = Updater(token='YOUR_BOT_TOKEN', use_context=True)
+
+def start(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text('Hello! Use /rename to rename a file, /changethumbnail to change the thumbnail of a document, or send a photo to save its thumbnail.')
+
+def rename_file(update: Update, context: CallbackContext) -> None:
+    # Check if the command has a file attached
+    if not update.message.document:
+        update.message.reply_text('Please attach a file to rename.')
+        return
+
+    # Get the file details
+    file_id = update.message.document.file_id
+    file_name = update.message.document.file_name
+
+    # Specify the new file name (you can customize this)
+    new_file_name = 'new_' + file_name
+
+    # Rename the file
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f'Renaming file to: {new_file_name}')
+    context.bot.send_document(chat_id=update.effective_chat.id, document=file_id, filename=new_file_name)
+
+def change_thumbnail(update: Update, context: CallbackContext) -> None:
+    # Check if the command has a file attached
+    if not update.message.document:
+        update.message.reply_text('Please attach a document to change its thumbnail.')
+        return
+
+    # Get the file details
+    file_id = update.message.document.file_id
+
+    # Specify the new thumbnail (you can customize this)
+    new_thumbnail = 'https://example.com/your_thumbnail.jpg'
+
+    # Change the thumbnail
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f'Changing thumbnail to: {new_thumbnail}')
+    context.bot.send_document(chat_id=update.effective_chat.id, document=file_id, thumb=new_thumbnail)
+
+def save_photo_thumbnail(update: Update, context: CallbackContext) -> None:
+    # Check if the message has a photo
+    if not update.message.photo:
+        update.message.reply_text('Please send a photo to save its thumbnail.')
+        return
+
+    # Get the photo details
+    photo_id = update.message.photo[-1].file_id
+
+    # Save the photo's thumbnail
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f'Saving thumbnail of the photo...')
+    context.bot.send_photo(chat_id=update.effective_chat.id, photo=photo_id)
+
+# Add handlers
+updater.dispatcher.add_handler(CommandHandler('start', start))
+updater.dispatcher.add_handler(CommandHandler('rename', rename_file))
+updater.dispatcher.add_handler(CommandHandler('changethumbnail', change_thumbnail))
+updater.dispatcher.add_handler(MessageHandler(Filters.photo, save_photo_thumbnail))
+
+# Start the bot
+updater.start_polling()
+updater.idle()

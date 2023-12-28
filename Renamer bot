@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 # Replace 'YOUR_BOT_TOKEN' with the actual token you received from BotFather
-updater = Updater(token='YOUR_BOT_TOKEN', use_context=True)
+updater = Updater(token='6600757300:AAEs6FhAKb4btafhmyizDcfV4VqHpphq_fc', use_context=True)
 
 def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Hello! Use /rename to rename a file, /changethumbnail to change the thumbnail of a document, or send a photo to save its thumbnail.')
